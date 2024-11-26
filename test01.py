@@ -13,6 +13,7 @@ bullet_speed = 7
 enemy_speed = 2
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+ELECTRIC_BLUE = (44, 117, 255)
 
 # Constantes de márgenes
 MARGIN_TOP = 80
@@ -249,6 +250,10 @@ def render():
         pygame.draw.rect(screen, (0,255,0), pygame.Rect(bullet[0], bullet[1], 5, 10))
     for bullet in enemy_bullet_list:
         pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(bullet[0], bullet[1], 10, 20))  # Disparo enemigo en rojo
+    
+    # Renderizar el borde en los márgenes
+    pygame.draw.rect(screen, ELECTRIC_BLUE, (MARGIN_SIDE, MARGIN_TOP, WIDTH - 2 * MARGIN_SIDE, HEIGHT - MARGIN_TOP - MARGIN_BOTTOM), 2)
+    
     font = pygame.font.Font(None, 36)
     lives_text = font.render(f'Vidas: {lives}', True, WHITE)
     score_text = font.render(f'Puntos: {score}', True, WHITE)
