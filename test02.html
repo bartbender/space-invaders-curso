@@ -52,7 +52,15 @@
         let playerImg = new Image();
         playerImg.src = 'player.png';
         let enemyImg = new Image();
-        enemyImg.src = 'enemy.png';
+        enemyImg.src = 'enemy.png';        
+        let sounds = {
+            explosion: new Audio('explosion.wav'),
+            explosion2: new Audio('explosion2.wav'),
+            hitHurt: new Audio('hitHurt.wav'),
+            laserShoot: new Audio('laserShoot.wav'),
+            laserShoot2: new Audio('laserShoot2.wav'),
+            powerUp: new Audio('powerUp.wav')
+        };
 
         let playerPos;
         let bulletList;
@@ -116,6 +124,7 @@
             document.addEventListener('keydown', (event) => {
                 if (event.code === 'Space' && bulletList.length < 2) {
                     bulletList.push({ x: playerPos.x + playerImg.width / 2, y: playerPos.y });
+                    sounds.laserShoot.play(); // Reproducir sonido laserShoot
                 }
                 if (event.code === 'ArrowLeft' && playerPos.x > MARGIN_SIDE) {
                     playerPos.x -= playerSpeed;
@@ -138,6 +147,7 @@
             canvas.addEventListener('click', () => {
                 if (bulletList.length < 2) {
                     bulletList.push({ x: playerPos.x + playerImg.width / 2, y: playerPos.y });
+                    sounds.laserShoot.play(); // Reproducir sonido laserShoot
                 }
             });
         }
@@ -196,6 +206,7 @@
                         enemyList.splice(enemyIndex, 1);
                         score += 25;
                         drawExplosion(enemy.x + enemyImg.width / 2, enemy.y + enemyImg.height / 2); // Dibujar explosión
+                        sounds.explosion.play(); // Reproducir sonido explosion
                     }
                 });
             });
@@ -208,6 +219,7 @@
                     lives -= 1;
                     resetEnemies();
                     if (lives <= 0) {
+                        sounds.explosion2.play(); // Reproducir sonido explosion2
                         gameOver();
                     }
                 }
@@ -223,8 +235,10 @@
                     if (lives > 0) {
                         shieldActive = true;
                         shieldStartTime = Date.now();
+                        sounds.hitHurt.play(); // Reproducir sonido hitHurt
                     }
                     if (lives <= 0) {
+                        sounds.explosion2.play(); // Reproducir sonido explosion2
                         gameOver();
                     }
                 }
@@ -242,6 +256,7 @@
             enemySpeed *= 1.1;
             pauseText = '¡Nivel Completado!';
             pauseSubtext = 'Presiona Enter para continuar';
+            sounds.powerUp.play(); // Reproducir sonido powerUp
             document.addEventListener('keydown', continueGame, { once: true }); // Añadir { once: true }
         }
 
@@ -335,6 +350,7 @@
                 const randomEnemyIndex = Math.floor(Math.random() * enemyList.length);
                 const enemy = enemyList[randomEnemyIndex];
                 enemyBulletList.push({ x: enemy.x + enemyImg.width / 2, y: enemy.y + enemyImg.height });
+                sounds.laserShoot2.play(); // Reproducir sonido laserShoot2
             }
         }
 
