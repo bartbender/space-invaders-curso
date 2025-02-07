@@ -7,8 +7,8 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Open test02.html",
-            "file": "c:\\_PROYECTOS\\_TESTS\\testpython\\space-invaders-python\\test02.html"
+            "name": "debug space3",
+            "file": "c:\\_PROYECTOS\\_TESTS\\space-invaders-curso\\space3.html"
         }
     ]
 }
