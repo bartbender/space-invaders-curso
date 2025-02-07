@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Invaders Mejorado</title>
+    <title>Space Invaders Clone</title>
     <style>
         body {
             display: flex;
@@ -52,7 +52,8 @@
         let playerImg = new Image();
         playerImg.src = 'player.png';
         let enemyImg = new Image();
-        enemyImg.src = 'enemy.png';        
+        enemyImg.src = 'enemy.png';  
+              
         let sounds = {
             explosion: new Audio('explosion.wav'),
             explosion2: new Audio('explosion2.wav'),
@@ -83,6 +84,8 @@
         let smallExplosions = [];
         let isMultiplayer = false;
         let secondPlayerPos;
+        let powerUpActive = false;
+        let powerUpEndTime = 0;
 
         function initializeStartValues() {
             playerPos = { x: GAME_WIDTH / 2, y: GAME_HEIGHT - MARGIN_BOTTOM - 128 };
@@ -169,10 +172,41 @@
             });
         }
 
+        function handleTouchEvents() {
+            canvas.addEventListener('touchstart', (event) => {
+                const touch = event.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const touchX = touch.clientX - rect.left;
+                if (touchX > MARGIN_SIDE && touchX < canvas.width - MARGIN_SIDE - playerImg.width) {
+                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, canvas.width - MARGIN_SIDE - playerImg.width));
+                }
+                if (bulletList.length < 2) {
+                    bulletList.push({ x: playerPos.x + playerImg.width / 2, y: playerPos.y });
+                    sounds.laserShoot.play();
+                }
+            });
+
+            canvas.addEventListener('touchmove', (event) => {
+                const touch = event.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const touchX = touch.clientX - rect.left;
+                if (touchX > MARGIN_SIDE && touchX < canvas.width - MARGIN_SIDE - playerImg.width) {
+                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, canvas.width - MARGIN_SIDE - playerImg.width));
+                }
+            });
+
+            canvas.addEventListener('touchend', (event) => {
+                if (bulletList.length < 2) {
+                    bulletList.push({ x: playerPos.x + playerImg.width / 2, y: playerPos.y });
+                    sounds.laserShoot.play();
+                }
+            });
+        }
+
         function moveBullets() {
             bulletList = bulletList.filter(bullet => bullet.y > 0);
             bulletList.forEach(bullet => {
-                bullet.y -= bulletSpeed;
+                bullet.y -= powerUpActive ? bulletSpeed * 2 : bulletSpeed; // Aumenta la velocidad de las balas si el power-up está activo
             });
         }
 
@@ -225,6 +259,9 @@
                         score += 25;
                         drawExplosion(enemy.x + enemyImg.width / 2, enemy.y + enemyImg.height / 2);
                         sounds.explosion.play();
+                        if (Math.random() < 0.3) { // 10% de probabilidad de generar un power-up
+                            generatePowerUp(enemy.x, enemy.y);
+                        }
                     }
                 });
             });
@@ -334,6 +371,7 @@
 
             renderExplosions();
             renderSmallExplosions();
+            renderPowerUps();
 
             if (shieldActive) {
                 drawShield();
@@ -413,6 +451,55 @@
             });
         }
 
+        function handlePowerUps() {
+            powerUpList.forEach((powerUp, index) => {
+                if (playerPos.x < powerUp.x + powerUp.width &&
+                    playerPos.x + playerImg.width > powerUp.x &&
+                    playerPos.y < powerUp.y + powerUp.height &&
+                    playerPos.y + playerImg.height > powerUp.y) {
+                    powerUpList.splice(index, 1);
+                    activatePowerUp();
+                }
+            });
+        }
+
+        function activatePowerUp() {
+            powerUpActive = true;
+            powerUpEndTime = Date.now() + 10000; // Power-up dura 10 segundos
+            sounds.powerUp.play();
+        }
+
+        function checkPowerUpStatus() {
+            if (powerUpActive && Date.now() > powerUpEndTime) {
+                powerUpActive = false;
+            }
+        }
+
+        function generatePowerUp(x, y) {
+            const powerUp = {
+                x: x,
+                y: y,
+                width: 32,
+                height: 32,
+                img: new Image()
+            };
+            powerUp.img.src = 'powerup.png';
+            powerUpList.push(powerUp);
+        }
+
+        function movePowerUps() {
+            powerUpList.forEach((powerUp) => {
+                powerUp.y += 2; // Velocidad de caída del power-up
+            });
+            powerUpList = powerUpList.filter(powerUp => powerUp.y < GAME_HEIGHT);
+        }
+
+        function renderPowerUps() {
+            powerUpList.forEach((powerUp) => {
+                ctx.drawImage(powerUp.img, powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+            });
+        }
+
         function gameLoop() {
             gameLoopId = requestAnimationFrame(gameLoop);
             handleEvents();
@@ -420,7 +507,10 @@
                 moveBullets();
                 moveEnemyBullets();
                 moveEnemies();
+                movePowerUps();
                 checkCollisions();
+                handlePowerUps();
+                checkPowerUpStatus();
                 render();
                 if (Math.random() < 0.02) {
                     enemyShoot();
@@ -451,10 +541,8 @@
             resetGame();
             handleEvents();
             handleMouseEvents();
+            handleTouchEvents(); // Añadir esta línea para manejar eventos de touch
         };
     </script>
 </body>
 </html>
-```
-
-Este código incluye las mejoras sugeridas como el aumento de dificultad progresivo, power-ups, mejores gráficos y sonidos, soporte para dispositivos móviles y un modo multijugador básico.
