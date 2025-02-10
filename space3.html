@@ -174,9 +174,10 @@
         function handleMouseEvents() {
             canvas.addEventListener('mousemove', (event) => {
                 const rect = canvas.getBoundingClientRect();
-                const mouseX = event.clientX - rect.left;
-                if (mouseX > MARGIN_SIDE && mouseX < canvas.width - MARGIN_SIDE - playerImg.width) {
-                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(mouseX - playerImg.width / 2, canvas.width - MARGIN_SIDE - playerImg.width));
+                const scaleX = canvas.width / rect.width;
+                const mouseX = (event.clientX - rect.left) * scaleX;
+                if (mouseX > MARGIN_SIDE && mouseX < GAME_WIDTH - MARGIN_SIDE - playerImg.width/2) {
+                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(mouseX - playerImg.width / 2, GAME_WIDTH - MARGIN_SIDE - playerImg.width));
                 }
             });
 
@@ -189,9 +190,10 @@
             canvas.addEventListener('touchstart', (event) => {
                 const touch = event.touches[0];
                 const rect = canvas.getBoundingClientRect();
-                const touchX = touch.clientX - rect.left;
-                if (touchX > MARGIN_SIDE && touchX < canvas.width - MARGIN_SIDE - playerImg.width) {
-                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, canvas.width - MARGIN_SIDE - playerImg.width));
+                const scaleX = canvas.width / rect.width;
+                const touchX = (touch.clientX - rect.left) * scaleX;
+                if (touchX > MARGIN_SIDE && touchX < GAME_WIDTH - MARGIN_SIDE - playerImg.width) {
+                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, GAME_WIDTH - MARGIN_SIDE - playerImg.width));
                 }
                 if (bulletList.length < 2) {
                     bulletList.push({ x: playerPos.x + playerImg.width / 2, y: playerPos.y });
@@ -202,9 +204,10 @@
             canvas.addEventListener('touchmove', (event) => {
                 const touch = event.touches[0];
                 const rect = canvas.getBoundingClientRect();
-                const touchX = touch.clientX - rect.left;
-                if (touchX > MARGIN_SIDE && touchX < canvas.width - MARGIN_SIDE - playerImg.width) {
-                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, canvas.width - MARGIN_SIDE - playerImg.width));
+                const scaleX = canvas.width / rect.width;
+                const touchX = (touch.clientX - rect.left) * scaleX;
+                if (touchX > MARGIN_SIDE && touchX < GAME_WIDTH - MARGIN_SIDE - playerImg.width) {
+                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, GAME_WIDTH - MARGIN_SIDE - playerImg.width));
                 }
             });
 
