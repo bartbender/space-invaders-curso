@@ -187,35 +187,40 @@
         }
 
         function handleTouchEvents() {
-            canvas.addEventListener('touchstart', (event) => {
-                const touch = event.touches[0];
+            let touchInterval;
+            const movePlayer = (touchX) => {
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width;
-                const touchX = (touch.clientX - rect.left) * scaleX;
-                if (touchX > MARGIN_SIDE && touchX < GAME_WIDTH - MARGIN_SIDE - playerImg.width) {
-                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, GAME_WIDTH - MARGIN_SIDE - playerImg.width));
+                const targetX = (touchX - rect.left) * scaleX;
+                const speed = enemySpeed * 2;
+
+                if (targetX < playerPos.x) {
+                    playerPos.x = Math.max(MARGIN_SIDE, playerPos.x - speed);
+                } else if (targetX > playerPos.x + playerImg.width) {
+                    playerPos.x = Math.min(GAME_WIDTH - MARGIN_SIDE - playerImg.width, playerPos.x + speed);
                 }
+            };
+
+            canvas.addEventListener('touchstart', (event) => {
+                const touch = event.touches[0];
+                movePlayer(touch.clientX);
                 if (bulletList.length < 2) {
-                    bulletList.push({ x: playerPos.x + playerImg.width / 2, y: playerPos.y });
-                    sounds.laserShoot.play();
+                    triggerShoot();
                 }
+                touchInterval = setInterval(() => movePlayer(touch.clientX), 16);
             });
 
             canvas.addEventListener('touchmove', (event) => {
                 const touch = event.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const touchX = (touch.clientX - rect.left) * scaleX;
-                if (touchX > MARGIN_SIDE && touchX < GAME_WIDTH - MARGIN_SIDE - playerImg.width) {
-                    playerPos.x = Math.max(MARGIN_SIDE, Math.min(touchX - playerImg.width / 2, GAME_WIDTH - MARGIN_SIDE - playerImg.width));
-                }
+                movePlayer(touch.clientX);
             });
 
-            canvas.addEventListener('touchend', (event) => {
-                 triggerShoot();
+            canvas.addEventListener('touchend', () => {
+                clearInterval(touchInterval);
             });
         }
 
+        
         function moveBullets() {
             bulletList = bulletList.filter(bullet => bullet.y > 0);
             bulletList.forEach(bullet => {
@@ -248,9 +253,11 @@
 
         function moveEnemies() {
             let edgeReached = false;
+            const rightBoundary = GAME_WIDTH - 2 * MARGIN_SIDE;
+
             enemyList.forEach((enemy) => {
                 enemy.x += enemySpeed * enemyDirection;
-                if (enemy.x <= MARGIN_SIDE || enemy.x >= canvas.width - MARGIN_SIDE - enemyImg.width) {
+                if (enemy.x <= MARGIN_SIDE || enemy.x >= rightBoundary - enemyImg.width) {
                     edgeReached = true;
                 }
             });
