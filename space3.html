@@ -35,11 +35,9 @@
         <canvas id="gameCanvas" width="1024" height="768"></canvas>
     </div>
     <script>
-        // Obtener el elemento canvas y su contexto
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Definir constantes para el juego
         const WIDTH = 1024;
         const HEIGHT = 768;
         const playerSpeed = 5;
@@ -51,13 +49,11 @@
         const GAME_WIDTH = 900;
         const GAME_HEIGHT = 600;
 
-        // Cargar imágenes
         let playerImg = new Image();
         playerImg.src = 'player.png';
         let enemyImg = new Image();
         enemyImg.src = 'enemy.png';  
               
-        // Cargar sonidos
         let sounds = {
             explosion: new Audio('explosion.wav'),
             explosion2: new Audio('explosion2.wav'),
@@ -70,7 +66,6 @@
         let powerUpImg = new Image();
         powerUpImg.src = 'powerup.png';
 
-        // Definir variables del juego
         let playerPos;
         let bulletList;
         let bulletListLeft;
@@ -98,7 +93,6 @@
         let powerUpEndTime = 0;
         let powerUpCount = 0;
 
-        // Inicializar los valores iniciales del juego
         function initializeStartValues() {
             playerPos = { x: GAME_WIDTH / 2, y: GAME_HEIGHT - MARGIN_BOTTOM - 128 };
             secondPlayerPos = { x: GAME_WIDTH / 2 + 100, y: GAME_HEIGHT - MARGIN_BOTTOM - 128 };
@@ -119,7 +113,6 @@
             enemySpeed = 2;
         }
 
-        // Renderizar los textos de pausa en el canvas
         function renderPauseTexts() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.font = '74px Arial';
@@ -131,7 +124,6 @@
             ctx.fillText(pauseSubtext, canvas.width / 2, canvas.height / 2 + 50);
         }
 
-        // Inicializar los enemigos para el nivel actual
         function initializeEnemies() {
             let rows = Math.min(5, Math.floor(level / 2) + 2);
             let cols = Math.min(8, level + 3);
@@ -143,7 +135,6 @@
                 }
             }
         }
-        // Función para disparar
         function triggerShoot(){
             if (bulletList.length < 2) {
                 if (powerUpActive === 2) {
@@ -155,7 +146,6 @@
             }                  
         }
 
-        // Manejar eventos de teclado
         function handleEvents() {
             document.addEventListener('keydown', (event) => {
                 if (event.code === 'Space' && bulletList.length < 2) {
@@ -181,7 +171,6 @@
             });
         }
 
-        // Manejar eventos de ratón
         function handleMouseEvents() {
             canvas.addEventListener('mousemove', (event) => {
                 const rect = canvas.getBoundingClientRect();
@@ -196,7 +185,6 @@
             });
         }
 
-        // Manejar eventos táctiles
         function handleTouchEvents() {
             canvas.addEventListener('touchstart', (event) => {
                 const touch = event.touches[0];
@@ -225,7 +213,6 @@
             });
         }
 
-        // Mover las balas
         function moveBullets() {
             bulletList = bulletList.filter(bullet => bullet.y > 0);
             bulletList.forEach(bullet => {
@@ -246,7 +233,6 @@
             });
         }
 
-        // Mover las balas enemigas
         function moveEnemyBullets() {
             enemyBulletList.forEach((bullet, index) => {
                 bullet.y += bulletSpeed;
@@ -257,7 +243,6 @@
             });
         }
 
-        // Mover los enemigos
         function moveEnemies() {
             let edgeReached = false;
             enemyList.forEach((enemy) => {
@@ -275,7 +260,6 @@
             }
         }
 
-        // Reiniciar los enemigos
         function resetEnemies() {
             enemyList = [];
             bulletList = [];
@@ -288,7 +272,6 @@
             initializeEnemies();
         }
 
-        // Comprobar colisiones entre balas y enemigos
         function checkCollisions() {
             bulletList.forEach((bullet, bulletIndex) => {
                 enemyList.forEach((enemy, enemyIndex) => {
@@ -383,7 +366,6 @@
             }
         }
 
-        // Función para manejar la finalización del nivel
         function levelComplete() {
             console.log('levelComplete called');
             running = false;
@@ -395,7 +377,6 @@
             document.addEventListener('keydown', continueGame, { once: true });
         }
 
-        // Función para continuar el juego después de completar el nivel
         function continueGame(event) {
             if (event.code === 'Enter') {
                 resetEnemies();
@@ -406,7 +387,6 @@
             }
         }
 
-        // Función para manejar el game over
         function gameOver() {
             running = false;
             pauseText = 'GAME OVER';
@@ -414,7 +394,6 @@
             document.addEventListener('keydown', handleRestart);
         }
 
-        // Función para manejar el reinicio después del game over
         function handleRestart(event) {
             if (event.code === 'KeyR') {
                 document.removeEventListener('keydown', handleRestart);
@@ -423,7 +402,6 @@
             }
         }
 
-        // Función para reiniciar el juego
         function resetGame() {
             initializeStartValues();
             playerPos = { x: GAME_WIDTH / 2, y: GAME_HEIGHT - MARGIN_BOTTOM - playerImg.height - 10 };
@@ -435,7 +413,6 @@
             }
         }
 
-        // Renderizar los elementos del juego en el canvas
         function render() {
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
             ctx.drawImage(playerImg, playerPos.x, playerPos.y, 64, 64);
@@ -489,7 +466,6 @@
             
         }
 
-        // Dibujar el escudo alrededor del jugador
         function drawShield() {
             const elapsedTime = (Date.now() - shieldStartTime) / 1000;
             if (elapsedTime > 1.5) {
@@ -507,7 +483,6 @@
             ctx.stroke();
         }
 
-        // Hacer que el enemigo dispare balas
         function enemyShoot() {
             if (enemyList.length > 0) {
                 const randomEnemyIndex = Math.floor(Math.random() * enemyList.length);
@@ -517,14 +492,12 @@
             }
         }
 
-        // Dibujar una explosión
         function drawExplosion(x, y) {
             const explosionDuration = 1000;
             const explosionStartTime = Date.now();
             explosions.push({ x, y, startTime: explosionStartTime, duration: explosionDuration });
         }
 
-        // Renderizar las explosiones
         function renderExplosions() {
             const currentTime = Date.now();
             explosions = explosions.filter(explosion => currentTime - explosion.startTime < explosion.duration);
@@ -538,14 +511,12 @@
             });
         }
 
-        // Dibujar una pequeña explosión
         function drawSmallExplosion(x, y) {
             const explosionDuration = 1000;
             const explosionStartTime = Date.now();
             smallExplosions.push({ x, y, startTime: explosionStartTime, duration: explosionDuration });
         }
 
-        // Renderizar las pequeñas explosiones
         function renderSmallExplosions() {
             const currentTime = Date.now();
             smallExplosions = smallExplosions.filter(explosion => currentTime - explosion.startTime < explosion.duration);
@@ -559,7 +530,6 @@
             });
         }
 
-        // Manejar power-ups
         function handlePowerUps() {
             powerUpList.forEach((powerUp, index) => {
                 if (playerPos.x < powerUp.x + powerUp.width &&
@@ -572,7 +542,6 @@
             });
         }
 
-        // Activar un power-up
         function activatePowerUp() {
             if (powerUpActive < 2) {
                 powerUpActive++;
@@ -581,14 +550,12 @@
             sounds.powerUp.play();
         }
 
-        // Comprobar el estado del power-up
         function checkPowerUpStatus() {
             if (powerUpActive > 0 && Date.now() > powerUpEndTime) {                
                     powerUpActive--;                
             }
         }
 
-        // Generar un power-up
         function generatePowerUp(x, y) {
             const powerUp = {
                 x: x,
@@ -601,7 +568,6 @@
             powerUpList.push(powerUp);
         }
 
-        // Mover los power-ups
         function movePowerUps() {
             powerUpList.forEach((powerUp) => {
                 powerUp.y += 2; // Velocidad de caída del power-up
@@ -609,14 +575,12 @@
             powerUpList = powerUpList.filter(powerUp => powerUp.y < GAME_HEIGHT);
         }
 
-        // Renderizar los power-ups
         function renderPowerUps() {
             powerUpList.forEach((powerUp) => {
                 ctx.drawImage(powerUp.img, powerUp.x, powerUp.y, powerUp.width, powerUp.height);
             });
         }
 
-        // Disparar balas triples
         function shootTriple() {
             const angle = Math.PI / 12; // 15 grados en radianes
             const speed = bulletSpeed;
@@ -626,7 +590,6 @@
             sounds.laserShoot.play();
         }
 
-        // Bucle principal del juego
         function gameLoop() {
             gameLoopId = requestAnimationFrame(gameLoop);
             handleEvents();
@@ -648,20 +611,20 @@
             }
         }
 
-        // Redimensionar el canvas
         function resizeCanvas() {
             const scale = Math.min((window.innerWidth - 20) / GAME_WIDTH, (window.innerHeight - 20) / GAME_HEIGHT);
             const canvasWidth = GAME_WIDTH * scale;
             const canvasHeight = GAME_HEIGHT * scale;
+            
             canvas.style.width = `${canvasWidth}px`;
             canvas.style.height = `${canvasHeight}px`;
-            canvas.width = GAME_WIDTH;
-            canvas.height = GAME_HEIGHT;
+            
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
             ctx.setTransform(scale, 0, 0, scale, 0, 0);
             playerPos = { x: GAME_WIDTH / 2, y: GAME_HEIGHT - MARGIN_BOTTOM - playerImg.height - 10 };
         }
-
-        // Event listeners
         window.addEventListener('resize', resizeCanvas);
 
         window.onload = () => {
